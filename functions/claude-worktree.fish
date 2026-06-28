@@ -1,12 +1,8 @@
 function claude-worktree -d 'Fuzzy-search Claude Code worktrees across all ghq repos and cd into the selection'
     # Selector (default: fzf). Override with $CLAUDE_WORKTREE_SELECTOR / $CLAUDE_WORKTREE_SELECTOR_OPTS.
     # The legacy $WORKTREE_SELECTOR / $WORKTREE_SELECTOR_OPTS names are still honored as a fallback.
-    set -l selector fzf
-    test -n "$WORKTREE_SELECTOR"; and set selector $WORKTREE_SELECTOR
-    test -n "$CLAUDE_WORKTREE_SELECTOR"; and set selector $CLAUDE_WORKTREE_SELECTOR
-    set -l selector_opts
-    test -n "$WORKTREE_SELECTOR_OPTS"; and set selector_opts $WORKTREE_SELECTOR_OPTS
-    test -n "$CLAUDE_WORKTREE_SELECTOR_OPTS"; and set selector_opts $CLAUDE_WORKTREE_SELECTOR_OPTS
+    set -l selector (_claude_worktree_selector)
+    set -l selector_opts (_claude_worktree_selector_opts)
 
     if not type -qf $selector
         printf "\n[claude-worktree.fish] ERROR: '%s' not found.\n" $selector
@@ -22,17 +18,7 @@ function claude-worktree -d 'Fuzzy-search Claude Code worktrees across all ghq r
     end
 
     # Collect "<display>\t<fullpath>" for every directory under any repo's .claude/worktrees/.
-    set -l entries
-    for repo in (ghq list --full-path)
-        set -l wtdir "$repo/.claude/worktrees"
-        test -d "$wtdir"; or continue
-        set -l rel (string replace -- "$ghq_root/" "" "$repo")
-        for d in $wtdir/*/
-            set -l path (string trim --right --chars=/ -- "$d")
-            set -l name (path basename -- "$path")
-            set -a entries (printf '%s  ▸  %s\t%s' "$rel" "$name" "$path")
-        end
-    end
+    set -l entries (_claude_worktree_entries $ghq_root (ghq list --full-path))
 
     if test (count $entries) -eq 0
         printf "\n[claude-worktree.fish] No worktrees found under any '.claude/worktrees/'.\n"

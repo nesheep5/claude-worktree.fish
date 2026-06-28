@@ -1,4 +1,4 @@
-name: lint
+name: CI
 
 on:
   push:
@@ -6,13 +6,14 @@ on:
   pull_request:
 
 jobs:
-  fish-syntax:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - name: Install fish
         run: |
+          sudo apt-add-repository -yn ppa:fish-shell/release-3
           sudo apt-get update
           sudo apt-get install -y fish
 
@@ -26,4 +27,12 @@ jobs:
               fish --no-execute $f; or set failed 1
           end
           exit $failed
+        shell: fish {0}
+
+      - name: Run tests
+        # Install the plugin itself plus fishtape, then run the test suite
+        # (mirrors the fisher project's own CI setup).
+        run: |
+          fisher install $GITHUB_WORKSPACE jorgebucaran/fishtape
+          fishtape tests/*.fish
         shell: fish {0}
