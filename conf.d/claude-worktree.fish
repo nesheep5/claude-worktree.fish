@@ -1,6 +1,6 @@
 # Bind Ctrl-W to the worktree fuzzy finder.
 #
-# NOTE: Ctrl-W is bound to `backward-kill-word` by fish's default key bindings.
+# NOTE: Ctrl-W is bound to `backward-kill-path-component` by fish's default key bindings.
 # This plugin overrides it. To keep the default behaviour, set the following in
 # your config BEFORE this plugin loads (e.g. in ~/.config/fish/config.fish):
 #

@@ -44,7 +44,7 @@ claude-worktree
 
 ## Key binding and the Ctrl-W default
 
-fish binds <kbd>Ctrl-W</kbd> to `backward-kill-word` by default, and this plugin overrides it. To keep the default and choose your own key, set this before the plugin loads (e.g. at the top of `~/.config/fish/config.fish`):
+fish binds <kbd>Ctrl-W</kbd> to `backward-kill-path-component` by default, and this plugin overrides it. To keep the default and choose your own key, set this before the plugin loads (e.g. at the top of `~/.config/fish/config.fish`):
 
 ```fish
 set -g claude_worktree_no_bindings 1
@@ -58,9 +58,11 @@ bind \co claude-worktree   # Ctrl-O, for example
 
 ## Configuration
 
-- `WORKTREE_SELECTOR` — the fuzzy selector to use (default: `fzf`). Note: the preview and column options are written for `fzf`; other selectors may ignore them.
-- `WORKTREE_SELECTOR_OPTS` — extra options passed to the selector.
+- `CLAUDE_WORKTREE_SELECTOR` — the fuzzy selector to use (default: `fzf`). Note: the preview and column options are written for `fzf`; other selectors may ignore them.
+- `CLAUDE_WORKTREE_SELECTOR_OPTS` — extra options passed to the selector.
 - `claude_worktree_no_bindings` — set (to any value) to skip the default <kbd>Ctrl-W</kbd> binding.
+
+> The legacy `WORKTREE_SELECTOR` / `WORKTREE_SELECTOR_OPTS` names are still honored as a fallback when the `CLAUDE_WORKTREE_*` variables are unset.
 
 ## How it works
 

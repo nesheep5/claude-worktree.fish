@@ -1,9 +1,12 @@
 function claude-worktree -d 'Fuzzy-search Claude Code worktrees across all ghq repos and cd into the selection'
-    # Selector (default: fzf). Override with $WORKTREE_SELECTOR / $WORKTREE_SELECTOR_OPTS.
+    # Selector (default: fzf). Override with $CLAUDE_WORKTREE_SELECTOR / $CLAUDE_WORKTREE_SELECTOR_OPTS.
+    # The legacy $WORKTREE_SELECTOR / $WORKTREE_SELECTOR_OPTS names are still honored as a fallback.
     set -l selector fzf
-    set -q WORKTREE_SELECTOR; and test -n "$WORKTREE_SELECTOR"; and set selector $WORKTREE_SELECTOR
+    test -n "$WORKTREE_SELECTOR"; and set selector $WORKTREE_SELECTOR
+    test -n "$CLAUDE_WORKTREE_SELECTOR"; and set selector $CLAUDE_WORKTREE_SELECTOR
     set -l selector_opts
-    set -q WORKTREE_SELECTOR_OPTS; and test -n "$WORKTREE_SELECTOR_OPTS"; and set selector_opts $WORKTREE_SELECTOR_OPTS
+    test -n "$WORKTREE_SELECTOR_OPTS"; and set selector_opts $WORKTREE_SELECTOR_OPTS
+    test -n "$CLAUDE_WORKTREE_SELECTOR_OPTS"; and set selector_opts $CLAUDE_WORKTREE_SELECTOR_OPTS
 
     if not type -qf $selector
         printf "\n[claude-worktree.fish] ERROR: '%s' not found.\n" $selector
