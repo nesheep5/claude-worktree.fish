@@ -18,15 +18,19 @@ set -l lines (_claude_worktree_entries $root $repo_a $repo_b)
 
 @test "emits one line per worktree directory" (count $lines) -eq 2
 
-# Display column uses the repo path relative to the ghq root.
-@test "display is repo-relative and names the worktree" (string match -q '*github.com/acme/web-app  ▸  feature-login*' -- "$lines[1] $lines[2]"; echo $status) -eq 0
+# Display column uses the repo path relative to the ghq root. Match against all
+# lines joined, so the assertion does not depend on the glob iteration order.
+set -l joined (string join \n -- $lines)
+set -l feature_login (string match -- '*github.com/acme/web-app  ▸  feature-login*' $joined)
+@test "display is repo-relative and names the worktree" -n "$feature_login"
 
 # The full path is carried after a tab and points at the real directory.
 set -l first_path (string split -f2 \t -- $lines[1])
 @test "full path after the tab exists on disk" -d "$first_path"
 
 # A repo without .claude/worktrees contributes nothing.
-@test "repo without worktrees dir is skipped" (string match -q '*foo/bar*' -- $lines; echo $status) -eq 1
+set -l foobar (string match -- '*foo/bar*' $joined)
+@test "repo without worktrees dir is skipped" -z "$foobar"
 
 # No worktrees anywhere → no output.
 set -l empty (_claude_worktree_entries $root $repo_b)
