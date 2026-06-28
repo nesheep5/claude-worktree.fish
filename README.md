@@ -27,19 +27,19 @@ The left pane is the worktree list (searchable by repo name or branch name); the
 With [fisher](https://github.com/jorgebucaran/fisher):
 
 ```fish
-fisher install nesheep5/worktree.fish
+fisher install nesheep5/claude-worktree.fish
 ```
 
 ## Usage
 
-Press <kbd>Ctrl-W</kbd> on the command line. Whatever you have typed becomes the initial fzf query, so `cor<Ctrl-W>` opens the finder pre-filtered to worktrees matching `cor`.
+Press <kbd>Ctrl-W</kbd> on the command line. Whatever you have typed becomes the initial fzf query, so `feat<Ctrl-W>` opens the finder pre-filtered to worktrees matching `feat`.
 
 Select a worktree and press <kbd>Enter</kbd> to `cd` into it.
 
 You can also call the function directly:
 
 ```fish
-__worktree_search
+claude-worktree
 ```
 
 ## Key binding and the Ctrl-W default
@@ -47,20 +47,20 @@ __worktree_search
 fish binds <kbd>Ctrl-W</kbd> to `backward-kill-word` by default, and this plugin overrides it. To keep the default and choose your own key, set this before the plugin loads (e.g. at the top of `~/.config/fish/config.fish`):
 
 ```fish
-set -g worktree_search_no_bindings 1
+set -g claude_worktree_no_bindings 1
 ```
 
 Then bind the finder wherever you like:
 
 ```fish
-bind \co __worktree_search   # Ctrl-O, for example
+bind \co claude-worktree   # Ctrl-O, for example
 ```
 
 ## Configuration
 
 - `WORKTREE_SELECTOR` — the fuzzy selector to use (default: `fzf`). Note: the preview and column options are written for `fzf`; other selectors may ignore them.
 - `WORKTREE_SELECTOR_OPTS` — extra options passed to the selector.
-- `worktree_search_no_bindings` — set (to any value) to skip the default <kbd>Ctrl-W</kbd> binding.
+- `claude_worktree_no_bindings` — set (to any value) to skip the default <kbd>Ctrl-W</kbd> binding.
 
 ## How it works
 

@@ -1,4 +1,4 @@
-function __worktree_search -d 'Fuzzy-search Claude Code worktrees across all ghq repos and cd into the selection'
+function claude-worktree -d 'Fuzzy-search Claude Code worktrees across all ghq repos and cd into the selection'
     # Selector (default: fzf). Override with $WORKTREE_SELECTOR / $WORKTREE_SELECTOR_OPTS.
     set -l selector fzf
     set -q WORKTREE_SELECTOR; and test -n "$WORKTREE_SELECTOR"; and set selector $WORKTREE_SELECTOR
@@ -6,14 +6,14 @@ function __worktree_search -d 'Fuzzy-search Claude Code worktrees across all ghq
     set -q WORKTREE_SELECTOR_OPTS; and test -n "$WORKTREE_SELECTOR_OPTS"; and set selector_opts $WORKTREE_SELECTOR_OPTS
 
     if not type -qf $selector
-        printf "\n[worktree.fish] ERROR: '%s' not found.\n" $selector
+        printf "\n[claude-worktree.fish] ERROR: '%s' not found.\n" $selector
         commandline -f repaint
         return 1
     end
 
     set -l ghq_root (ghq root 2>/dev/null)
     if test -z "$ghq_root"
-        printf "\n[worktree.fish] ERROR: ghq not found or no root configured.\n"
+        printf "\n[claude-worktree.fish] ERROR: ghq not found or no root configured.\n"
         commandline -f repaint
         return 1
     end
@@ -32,7 +32,7 @@ function __worktree_search -d 'Fuzzy-search Claude Code worktrees across all ghq
     end
 
     if test (count $entries) -eq 0
-        printf "\n[worktree.fish] No worktrees found under any '.claude/worktrees/'.\n"
+        printf "\n[claude-worktree.fish] No worktrees found under any '.claude/worktrees/'.\n"
         commandline -f repaint
         return 0
     end
@@ -52,6 +52,14 @@ function __worktree_search -d 'Fuzzy-search Claude Code worktrees across all ghq
             --preview $preview --preview-window 'right,55%' | \
         string split -f2 \t)
 
-    test -n "$select"; and cd "$select"
+    if test -n "$select"
+        if test -d "$select"
+            cd "$select"
+        else
+            printf "\n[claude-worktree.fish] ERROR: directory no longer exists: %s\n" "$select"
+            commandline -f repaint
+            return 1
+        end
+    end
     commandline -f repaint
 end
