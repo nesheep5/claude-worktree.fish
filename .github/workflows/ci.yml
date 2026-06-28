@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Least privilege: the workflow only needs to read the checked-out code.
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install fish
+        run: |
+          sudo apt-add-repository -yn ppa:fish-shell/release-3
+          sudo apt-get update
+          sudo apt-get install -y fish
+
+      - name: Check fish syntax
+        # `fish --no-execute` parses each script without running it,
+        # failing the build on any syntax error.
+        run: |
+          set -l failed 0
+          for f in (find . -name '*.fish' -not -path './.git/*')
+              echo "checking $f"
+              fish --no-execute $f; or set failed 1
+          end
+          exit $failed
+        shell: fish {0}
+
+      - name: Run tests
+        # Bootstrap fisher (not preinstalled on the runner), install this
+        # plugin plus fishtape, then run the test suite.
+        #
+        # fisher / fishtape are pinned to release tags rather than `main` so
+        # that CI runs fetch a fixed, reviewed version — avoiding unpinned
+        # remote code execution if either upstream repo is later compromised.
+        run: |
+          curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/4.4.8/functions/fisher.fish | source
+          fisher install jorgebucaran/fisher@4.4.8
+          fisher install $GITHUB_WORKSPACE jorgebucaran/fishtape@3.0.1
+          fishtape tests/*.fish
+        shell: fish {0}
