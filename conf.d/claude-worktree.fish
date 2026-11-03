@@ -18,7 +18,17 @@ if not set -q claude_worktree_no_bindings
 end
 
 # Remove the Ctrl-W binding when fisher uninstalls the plugin.
-function _claude_worktree_uninstall --on-event claude_worktree_uninstall
-    bind -e \cw 2>/dev/null
-    bind -M insert -e \cw 2>/dev/null
+# fisher emits "<conf.d file basename>_uninstall", i.e. "claude-worktree_uninstall".
+#
+# Only the user-level binding this plugin added is erased, which lets fish's
+# preset binding (backward-kill-path-component) take effect again. A Ctrl-W
+# binding the user set themselves — including any set while opted out via
+# claude_worktree_no_bindings — is left untouched.
+function _claude_worktree_uninstall --on-event claude-worktree_uninstall
+    set -q claude_worktree_no_bindings; and return
+    for mode in default insert
+        if string match -q -- '* claude-worktree' (bind --user -M $mode \cw 2>/dev/null)
+            bind --user -M $mode -e \cw
+        end
+    end
 end
